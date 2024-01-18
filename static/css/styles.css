@@ -1,7 +1,79 @@
 body {
     font-family: "Helvetica", Sans-Serif;
-    background-color: #333; /* Light gray background color */
+    background-color: rgb(24,24,24); /* Light gray background color */
     color: white; /* Dark text color */
     margin: 0;
     padding: 0;
+    display: inline-table;
+    align-items: center;
+    justify-content: center;
+}
+
+h1 {
+    color: #1ED760;
+    text-align: center;
+}
+
+h2 {
+    color: rgb(150, 150, 150);
+    text-align: center;
+    text-decoration: underline;
+}
+
+a{
+    color: rgb(150, 150, 150);
+    text-decoration: none;
+}
+
+a:hover{
+    color:#1ED760;
+    text-decoration: underline;
+}
+
+table{
+    text-align: center;
+    width: 100%;
+    margin-top: 20px;
+    text-align: center;
+}
+
+th, td{
+    padding: 2px;
+    text-align: center;
+}
+
+tr:hover{
+    background-color: #1ED760;
+    color: black;
+}
+
+label{
+    margin-top: 10px;
+    text-align: center;
+}
+
+input[type="text"] {
+    width: 50%;
+    padding: 8px;
+    margin-top: 6px;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+    background-color: #333; /* Dark gray background for input */
+    color: #fff; /* White text color for input */
+    border: 1px solid #555; /* Darker gray border for input */
+}
+
+input[type="submit"] {
+    background-color: #1ED760; /* Spotify green */
+    color: #fff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition on hover */
+    font-size: 16px;
+}
+
+input[type="submit"]:hover {
+    background-color: #16843c; /* Darker green on hover */
 }
