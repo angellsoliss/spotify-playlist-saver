@@ -67,12 +67,14 @@ def save_playlist():
             if playlist['name'].lower() == PlName.lower():
                 #if so, grab playlist id
                 playlist_id = playlist['id']
+                #break if playlist is found
+                break
 
-        #if no matching playlist is found, return error  
+        #if no matching playlist is found, redirect to error screen  
         if not playlist_id:
-            return 'Playlist not found'
+            return redirect(url_for('not_found'))
+            
         
-
         #create new playlist
         new_playlist = sp.user_playlist_create(user_id, name=PlName_with_date ) 
         
@@ -90,6 +92,10 @@ def save_playlist():
     #render html template, pass playlist_names array to display on screen
     return render_template('index.html', playlist_names=playlist_names)
 
+#playlist not found route
+@app.route('/not_found')
+def not_found():
+    return render_template('notFound.html')
 
 #spotify authorization
 def get_token():

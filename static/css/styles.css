@@ -1,5 +1,7 @@
-body{
+body {
+    font-family: "Helvetica", Sans-Serif;
+    background-color: #333; /* Light gray background color */
+    color: white; /* Dark text color */
     margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: large;
+    padding: 0;
 }
