@@ -14,6 +14,7 @@ TOKEN_INFO = 'tokenInfo'
 #index route
 @app.route('/', methods=['POST', 'GET'])
 def login():
+    #authorize user
     auth_url = create_spotify_oauth().get_authorize_url()
     return redirect(auth_url)
     
@@ -23,40 +24,62 @@ def redirect_oauth():
     code = request.args.get('code')
     token_info = create_spotify_oauth().get_access_token(code)
     session[TOKEN_INFO] = token_info
+    #redirect user to main page after authorization
     return redirect(url_for('save_playlist', external=True))
 
 @app.route('/savePlaylist', methods=['POST', 'GET'])
 def save_playlist():
+    #get authorization token
     try:
         token_info = get_token()
     except:
         print('Not logged in')
         return redirect('/')
     
+    #create spotipy object using authorization token
     sp = spotipy.Spotify(auth=token_info['access_token'])
+    #get user id, needed to create playlists and access existing playlists
     user_id = sp.current_user()['id']
     
     #get user playlists
     current_playlists = sp.current_user_playlists()['items']
-
-    if request.method == 'POST':
-        PlName = request.form.get('PlName', '')
-        PlName_with_date = f"{PlName} - {datetime.now().strftime('%m/%d/%Y')}"
     
+    #create array, used to hold playlist names
+    playlist_names = []
+
+    #append playlist names to array
+    for playlist in current_playlists:
+        playlist_names.append(f"{playlist['name']}")
+
+    #if playlist name is entered
+    if request.method == 'POST':
+        #get user input text
+        PlName = request.form.get('PlName', '')
+        #format title for new playlist
+        PlName_with_date = f"{PlName} - {datetime.now().strftime('%m/%d/%Y')}"
+
+        #initialize playlist id before it is used
         playlist_id = None
 
+        #iterate through user playlists
         for playlist in current_playlists:
-            print(f"Playlist name: {playlist['name']}")
+            #check if user entered text matches existing playlist
             if playlist['name'].lower() == PlName.lower():
+                #if so, grab playlist id
                 playlist_id = playlist['id']
-            
+
+        #if no matching playlist is found, return error  
         if not playlist_id:
             return 'Playlist not found'
         
+
         #create new playlist
         new_playlist = sp.user_playlist_create(user_id, name=PlName_with_date ) 
         
+        #grab existing playlist tracks
         playlist_tracks = sp.playlist_items(playlist_id=playlist_id)
+
+        #add songs to new playlist
         song_uris = []
         for song in playlist_tracks['items']:
             song_uri = song['track']['uri']
@@ -64,8 +87,11 @@ def save_playlist():
         
         sp.user_playlist_add_tracks(user_id, new_playlist['id'], song_uris, None)
 
-    return render_template('index.html')
+    #render html template, pass playlist_names array to display on screen
+    return render_template('index.html', playlist_names=playlist_names)
 
+
+#spotify authorization
 def get_token():
     token_info = session.get(TOKEN_INFO, None)
     if not token_info:

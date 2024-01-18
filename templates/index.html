@@ -7,6 +7,14 @@
 {% block body %}
 <h1>Spotify Playlist Saver</h1>
 <form action="/savePlaylist" method="POST">
+    <table>
+        <th>Playlists Fetched</th>
+        {% for name in playlist_names %}
+        <tr>
+            <td>{{ name }}</td>
+        </tr>
+        {% endfor %}
+    </table>
     <label for="PlName">Enter name of playlist:</label>
     <input type="text" id="PlName" name="PlName">
     <input type="submit" value="Submit">
