@@ -2,6 +2,7 @@ from flask import Flask, render_template, url_for, request, session, redirect
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import time
+import os
 from datetime import datetime
 
 #initialize app
@@ -116,8 +117,8 @@ def get_redirect_uri():
     return url_for('redirect_oauth', _external=True, _scheme='http', _server=LIVE_SERVICE_DOMAIN)
 
 def create_spotify_oauth():
-    return SpotifyOAuth(client_id="c9354d5aaf464466aa88e959f5f1fb98",
-                        client_secret="dd461f6007634943bd3c1a88b4a483db",
+    return SpotifyOAuth(client_id=os.environ.get("SPOTIFY_CLIENT_ID"),
+                        client_secret=os.environ.get("SPOTIFY_CLIENT_SECRET"),
                         redirect_uri= get_redirect_uri(),
                         scope='user-library-read playlist-modify-public playlist-modify-private playlist-read-private playlist-read-collaborative')
 
