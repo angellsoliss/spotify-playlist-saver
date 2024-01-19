@@ -114,7 +114,7 @@ def get_token():
 def create_spotify_oauth():
     return SpotifyOAuth(client_id=os.environ.get("SPOTIFY_CLIENT_ID"),
                         client_secret=os.environ.get("SPOTIFY_CLIENT_SECRET"),
-                        redirect_uri= "https://playlist-saver.onrender.com",
+                        redirect_uri=url_for('redirect_oauth', external=True),
                         scope='user-library-read playlist-modify-public playlist-modify-private playlist-read-private playlist-read-collaborative')
 
 if __name__ == "__main__":
