@@ -116,5 +116,5 @@ def create_spotify_oauth():
                         redirect_uri= url_for('redirect_oauth', _external=True),
                         scope='user-library-read playlist-modify-public playlist-modify-private playlist-read-private playlist-read-collaborative')
 
-if __name__ == "__main__":
-    app.run(debug=False, host='0.0.0.0')
+#if __name__ == "__main__":
+    #app.run(debug=False, host='0.0.0.0')
