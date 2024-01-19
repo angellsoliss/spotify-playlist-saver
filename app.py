@@ -117,4 +117,4 @@ def create_spotify_oauth():
                         scope='user-library-read playlist-modify-public playlist-modify-private playlist-read-private playlist-read-collaborative')
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False, host='0.0.0.0')
