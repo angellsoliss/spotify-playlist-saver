@@ -4,23 +4,18 @@ from spotipy.oauth2 import SpotifyOAuth
 import time
 import os
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
 
 #initialize app
 app = Flask(__name__)
 
 app.config['SESSION_COOKIE_NAME'] = 'Spotify Cookie'
 app.secret_key = 'oidfu9-37uf93#232#1'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # Use SQLite for simplicity
-db = SQLAlchemy(app)
-
-class User(db.Model):
-    id = db.Column(db.String, primary_key=True)
-    token_info = db.Column(db.PickleType)
+TOKEN_INFO = 'tokenInfo'
 
 #index route
 @app.route('/', methods=['POST', 'GET'])
 def login():
+    #authorize user
     auth_url = create_spotify_oauth().get_authorize_url()
     return redirect(auth_url)
     
@@ -29,20 +24,9 @@ def redirect_oauth():
     session.clear()
     code = request.args.get('code')
     token_info = create_spotify_oauth().get_access_token(code)
-    user = User.query.filter_by(id=token_info['access_token']).first()
-    
-    if not user:
-        user = User(id=token_info['access_token'], token_info=token_info)
-        db.session.add(user)
-    else:
-        user.token_info = token_info
-    
-    db.session.commit()
-    
-    session['user_id'] = token_info['access_token']
-    
+    session[TOKEN_INFO] = token_info
+    #redirect user to main page after authorization
     return redirect(url_for('save_playlist'))
-
 
 @app.route('/savePlaylist', methods=['POST', 'GET'])
 def save_playlist():
@@ -116,32 +100,22 @@ def not_found():
 
 #spotify authorization
 def get_token():
-    user_id = session.get('user_id')
-    
-    if not user_id:
-        return redirect(url_for('login', external=False))
-    
-    user = User.query.get(user_id)
-    
-    if not user:
+    token_info = session.get(TOKEN_INFO, None)
+    if not token_info:
         return redirect(url_for('login', external=False))
     
     now = int(time.time())
-    is_expired = user.token_info['expires_at'] - now < 60
-    
+    is_expired = token_info['expires_at'] - now < 60
     if is_expired:
         spotify_oauth = create_spotify_oauth()
-        user.token_info = spotify_oauth.refresh_access_token(user.token_info['refresh_token'])
-        db.session.commit()
-    
-    return user.token_info
+        token_info = spotify_oauth.refresh_access_token(token_info['refresh_token'])
+    return token_info
 
 def create_spotify_oauth():
     return SpotifyOAuth(client_id=os.environ.get("SPOTIFY_CLIENT_ID"),
                         client_secret=os.environ.get("SPOTIFY_CLIENT_SECRET"),
-                        redirect_uri="https://playlist-saver.onrender.com/redirect",
+                        redirect_uri=url_for('redirect_oauth', external=True),
                         scope='user-library-read playlist-modify-public playlist-modify-private playlist-read-private playlist-read-collaborative')
 
 if __name__ == "__main__":
-    db.create_all()  # Create database tables
     app.run(debug=False, host='0.0.0.0')
