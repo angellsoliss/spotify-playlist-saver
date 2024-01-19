@@ -102,7 +102,7 @@ def not_found():
 def get_token():
     token_info = session.get(TOKEN_INFO, None)
     if not token_info:
-        redirect(url_for('login', external=False))
+        return redirect(url_for('login', external=False))
     
     now = int(time.time())
     is_expired = token_info['expires_at'] - now < 60
@@ -116,5 +116,6 @@ def create_spotify_oauth():
                         client_secret=os.environ.get("SPOTIFY_CLIENT_SECRET"),
                         redirect_uri= "https://playlist-saver.onrender.com",
                         scope='user-library-read playlist-modify-public playlist-modify-private playlist-read-private playlist-read-collaborative')
-#if __name__ == "__main__":
-    #app.run(debug=False, host='0.0.0.0')
+
+if __name__ == "__main__":
+    app.run(debug=False, host='0.0.0.0')
