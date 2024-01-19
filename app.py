@@ -26,7 +26,7 @@ def redirect_oauth():
     token_info = create_spotify_oauth().get_access_token(code)
     session[TOKEN_INFO] = token_info
     #redirect user to main page after authorization
-    return redirect(url_for('save_playlist', external=True))
+    return redirect(url_for('save_playlist'))
 
 @app.route('/savePlaylist', methods=['POST', 'GET'])
 def save_playlist():
