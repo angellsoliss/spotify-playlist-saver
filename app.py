@@ -11,6 +11,8 @@ app.config['SESSION_COOKIE_NAME'] = 'Spotify Cookie'
 app.secret_key = 'oidfu9-37uf93#232#1'
 TOKEN_INFO = 'tokenInfo'
 
+LIVE_SERVICE_DOMAIN = "https://playlist-saver.onrender.com"
+
 #index route
 @app.route('/', methods=['POST', 'GET'])
 def login():
@@ -110,11 +112,14 @@ def get_token():
         token_info = spotify_oauth.refresh_access_token(token_info['refresh_token'])
     return token_info
 
+def get_redirect_uri():
+    return url_for('redirect_oauth', _external=True, _scheme='http', _server=LIVE_SERVICE_DOMAIN)
+
 def create_spotify_oauth():
     return SpotifyOAuth(client_id="c9354d5aaf464466aa88e959f5f1fb98",
                         client_secret="dd461f6007634943bd3c1a88b4a483db",
-                        redirect_uri= url_for('redirect_oauth', _external=True),
+                        redirect_uri= get_redirect_uri(),
                         scope='user-library-read playlist-modify-public playlist-modify-private playlist-read-private playlist-read-collaborative')
 
-#if __name__ == "__main__":
-    #app.run(debug=False, host='0.0.0.0')
+if __name__ == "__main__":
+    app.run(debug=False, host='0.0.0.0')
